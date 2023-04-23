@@ -5,9 +5,6 @@ from pydantic import BaseModel
 from random import randrange
 
 
-##3500
-
-
 app = FastAPI()
 #uvicorn main:app --reload --port 5000
 #just in case "chrome://net-internals/#sockets"
@@ -92,6 +89,14 @@ def delete_post(id: int):
 #update posts
 @app.put("/posts/{id}")
 def update_post(id: int, post: Post):
-    print(post)
-    return {'message': "updated post"}
+    index = find_index_post(id)
+
+    if not post:
+        #cleaner
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
+                            detail = f"post with id: {id} was not found") 
+    post_dict = post.dict()
+    post_dict['id'] = id
+    my_posts[index] = post_dict
+    return {'data': post_dict}
 
